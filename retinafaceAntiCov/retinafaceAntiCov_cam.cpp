@@ -534,7 +534,7 @@ int main(int argc, char** argv) {
     while(char(cv::waitKey(1)) != 'q' && cap.isOpened()) {
         cap >> img;
         if (img.empty()) {
-            cout << "Video over!" << endl;
+            std::cout  << "Video over!" << std::endl;
             break;
         }
         cv::Mat pr_img = preprocess_img(img);
