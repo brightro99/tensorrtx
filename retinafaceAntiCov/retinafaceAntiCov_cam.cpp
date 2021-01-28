@@ -531,7 +531,7 @@ int main(int argc, char** argv) {
 	    return -1;
     }
     cv::Mat img;
-    while(char(waitKey(1)) != 'q' && cap.isOpened()) {
+    while(char(cv::waitKey(1)) != 'q' && cap.isOpened()) {
         cap >> img;
         if (img.empty()) {
             cout << "Video over!" << endl;
