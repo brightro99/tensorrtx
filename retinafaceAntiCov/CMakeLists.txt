@@ -35,5 +35,11 @@ target_link_libraries(retinafaceAntiCov cudart)
 target_link_libraries(retinafaceAntiCov myplugins)
 target_link_libraries(retinafaceAntiCov ${OpenCV_LIBS})
 
+add_executable(retinafaceAntiCovCam ${PROJECT_SOURCE_DIR}/retinafaceAntiCov_cam.cpp)
+target_link_libraries(retinafaceAntiCovCam nvinfer)
+target_link_libraries(retinafaceAntiCovCam cudart)
+target_link_libraries(retinafaceAntiCovCam myplugins)
+target_link_libraries(retinafaceAntiCovCam ${OpenCV_LIBS})
+
 add_definitions(-O2 -pthread)
 
