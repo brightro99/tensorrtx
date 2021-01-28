@@ -524,7 +524,7 @@ int main(int argc, char** argv) {
     delete[] trtModelStream;
 
     // cv::Mat img = cv::imread("test.jpg");
-    VideoCapture cap(0);
+    cv2::VideoCapture cap(0);
     if (!cap.isOpened())
     {
 	    std::cout << "Can't open the camera" << std:endl;
