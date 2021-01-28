@@ -527,7 +527,7 @@ int main(int argc, char** argv) {
     cv::VideoCapture cap(0);
     if (!cap.isOpened())
     {
-	    std::cout << "Can't open the camera" << std:endl;
+	    std::cout << "Can't open the camera" << std::endl;
 	    return -1;
     }
     cv::Mat img;
