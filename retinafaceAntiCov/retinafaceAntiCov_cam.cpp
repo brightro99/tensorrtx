@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <string>
 #include <sstream>
 #include <vector>
 #include <chrono>
@@ -524,7 +525,10 @@ int main(int argc, char** argv) {
     delete[] trtModelStream;
 
     // cv::Mat img = cv::imread("test.jpg");
-    cv::VideoCapture cap(0);
+    std::string video_path = "CH01124514.mp4"; // male
+    // std::string video_path = "CH01124749.mp4"; // female
+    // cv::VideoCapture cap(0);
+    cv::VideoCapture cap(video_path);
     if (!cap.isOpened())
     {
 	    std::cout << "Can't open the camera" << std::endl;
@@ -563,6 +567,7 @@ int main(int argc, char** argv) {
             }
             cv::putText(img, "mask: " + std::to_string((int)(res[j].mask_confidence * 100)) + "%", cv::Point(r.x, r.y + 40), cv::FONT_HERSHEY_PLAIN, 1.2, cv::Scalar(0x00, 0x00, 0xFF), 1);
         }
+	cv::resize(img, img, cv::Size(1920, 1080));
         imshow("Video", img);
     }
     // cv::imwrite("out.jpg", img);
