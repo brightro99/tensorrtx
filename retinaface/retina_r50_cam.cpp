@@ -349,12 +349,12 @@ int main(int argc, char** argv) {
     /* Video Test */
     // std::string video_path = "CH01124514.mp4"; // male
     // std::string video_path = "CH01124749.mp4"; // female
-    // std::string video_path = "4k_detection_test.mp4"; // male
-    // cv::VideoCapture cap(video_path);
+    std::string video_path = "4k_detection_test_mask.mp4"; // male
+    cv::VideoCapture cap(video_path);
 
     /* IP Cam Test */
-    std::string url = "rtsp://admin:123456@172.16.151.156:554/ch01/0";
-    cv::VideoCapture cap(url);
+    // std::string url = "rtsp://admin:123456@172.16.151.156:554/ch01/0";
+    // cv::VideoCapture cap(url);
 
     if (!cap.isOpened()) {
 	    std::cout << "Can't open the camera" << std::endl;
@@ -386,7 +386,7 @@ int main(int argc, char** argv) {
         doInference(*context, data, prob, BATCH_SIZE);
         auto end = std::chrono::system_clock::now();
         std::cout << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << "us" << std::endl;
-	std::cout << "FPS : " << cap.get(cv::CAP_PROP_FPS) << std::endl;
+	    std::cout << "FPS : " << cap.get(cv::CAP_PROP_FPS) << std::endl;
         for (int b = 0; b < BATCH_SIZE; b++) {
             std::vector<decodeplugin::Detection> res;
             nms(res, &prob[b * OUTPUT_SIZE]);
@@ -396,29 +396,33 @@ int main(int argc, char** argv) {
             cv::Mat tmp = img.clone();
             
 	    for (size_t j = 0; j < res.size(); j++) {
-                if (res[j].class_confidence < 0.1) continue;
+            if (res[j].class_confidence < 0.1) continue;
                 
-	        std::cout << INPUT_W << std::endl;	
-	        std::cout << INPUT_H << std::endl;	
-	        std::cout << res[j].bbox << std::endl;	
-	        std::cout << res[j].landmark << std::endl;	
-		cv::Rect r = get_rect_adapt_landmark(tmp, INPUT_W, INPUT_H, res[j].bbox, res[j].landmark);
-                cv::rectangle(tmp, r, cv::Scalar(0x27, 0xC1, 0x36), 2);
-                //cv::putText(tmp, std::to_string((int)(res[j].class_confidence * 100)) + "%", cv::Point(r.x, r.y - 1), cv::FONT_HERSHEY_PLAIN, 1.2, cv::Scalar(0xFF, 0xFF, 0xFF), 1);
-                // for (int k = 0; k < 10; k += 2) {
-                //     cv::circle(tmp, cv::Point(res[j].landmark[k], res[j].landmark[k + 1]), 1, cv::Scalar(255 * (k > 2), 255 * (k > 0 && k < 8), 255 * (k < 6)), 4);
-                // }
-		cv::Mat crop = tmp(r);
-		// int frame_cnt = cap.get(cv::CAP_PROP_FRAME_COUNT); 
-		std::string crop_name = "./images/crop_" + std::to_string(frame_cnt) + ".jpg";
-		std::string ori_name = "./images/original_" + std::to_string(frame_cnt) + ".jpg";
-		// std::string image_name = "./images/" + cap.get(cv::CAP_PROP_FRAME_COUNT) + ".jpg";
-		if(char(cv::waitKey(30) == 'c')) {
-   		    cv::imwrite(crop_name, crop);
-		    cv::imwrite(ori_name, tmp);
-		}
-		frame_cnt++;
-            }
+	        std::cout << "width : " << INPUT_W << std::endl;	
+	        std::cout << "height : " << INPUT_H << std::endl;	
+	        std::cout << "bbox : " << res[j].bbox[0] << " ";
+            std::cout << res[j].bbox[1] << " ";
+            std::cout << res[j].bbox[2] << " ";
+            std::cout << res[j].bbox[3] << std::endl;
+
+            cv::Rect bounds(0, 0, tmp.cols, tmp.rows);
+		    cv::Rect r = get_rect_adapt_landmark(tmp, INPUT_W, INPUT_H, res[j].bbox, res[j].landmark);
+            cv::rectangle(tmp, r, cv::Scalar(0x27, 0xC1, 0x36), 2);
+            //cv::putText(tmp, std::to_string((int)(res[j].class_confidence * 100)) + "%", cv::Point(r.x, r.y - 1), cv::FONT_HERSHEY_PLAIN, 1.2, cv::Scalar(0xFF, 0xFF, 0xFF), 1);
+            // for (int k = 0; k < 10; k += 2) {
+            //     cv::circle(tmp, cv::Point(res[j].landmark[k], res[j].landmark[k + 1]), 1, cv::Scalar(255 * (k > 2), 255 * (k > 0 && k < 8), 255 * (k < 6)), 4);
+            // }
+		    cv::Mat crop = tmp(r & bounds);
+		    // int frame_cnt = cap.get(cv::CAP_PROP_FRAME_COUNT); 
+		    std::string crop_name = "./images/crop_" + std::to_string(frame_cnt) + ".jpg";
+		    std::string ori_name = "./images/original_" + std::to_string(frame_cnt) + ".jpg";
+		    // std::string image_name = "./images/" + cap.get(cv::CAP_PROP_FRAME_COUNT) + ".jpg";
+		    if(char(cv::waitKey(30) == 'c')) {
+   		        cv::imwrite(crop_name, crop);
+		        cv::imwrite(ori_name, tmp);
+		    }
+		    frame_cnt++;
+        }
 
 	    cv::resize(tmp, tmp, cv::Size(1920,1080));
 	    cv::imshow("Video", tmp);
